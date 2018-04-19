@@ -1,70 +1,44 @@
 // @flow
 
-import { DeviceEventEmitter } from 'react-native';
+import { NativeModules } from 'react-native';
 
-import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../../app';
 import { MiddlewareRegistry } from '../../base/redux';
 
-import { enterPictureInPicture, _setEmitterSubscriptions } from './actions';
-import { _SET_EMITTER_SUBSCRIPTIONS } from './actionTypes';
+import { WANTS_TO_BE_IN_PIP_MODE } from './actionTypes';
+import { isItOkToGoPiP } from './functions';
+import { setWantsToBeInPiPMode } from './actions';
 
 /**
- * Middleware that handles Picture-in-Picture requests. Currently it enters
- * the native PiP mode on Android, when requested.
+ * Middleware for the Picture-in-Picture feature. It lets the native PIP module
+ * know whether the app is willing to switch to the PIP mode in case user
+ * minimizes the app.
  *
  * @param {Store} store - Redux store.
  * @returns {Function}
  */
-MiddlewareRegistry.register(store => next => action => {
+MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
+    const result = next(action);
+    const state = getState();
+    const { wantsToBeInPiPMode } = state['features/pip'];
+
     switch (action.type) {
-    case APP_WILL_MOUNT:
-        return _appWillMount(store, next, action);
+    case WANTS_TO_BE_IN_PIP_MODE: {
+        const { PictureInPicture } = NativeModules;
 
-    case APP_WILL_UNMOUNT:
-        store.dispatch(_setEmitterSubscriptions(undefined));
+        PictureInPicture
+            && PictureInPicture.setWantsToBeInPiPMode
+                && PictureInPicture.setWantsToBeInPiPMode(wantsToBeInPiPMode);
         break;
+    }
 
-    case _SET_EMITTER_SUBSCRIPTIONS: {
-        // Remove the current/old EventEmitter subscriptions.
-        const { emitterSubscriptions } = store.getState()['features/pip'];
+    default: {
+        const newWantsToBeInPiPMode = isItOkToGoPiP(state);
 
-        if (emitterSubscriptions) {
-            for (const emitterSubscription of emitterSubscriptions) {
-                // XXX We may be removing an EventEmitter subscription which is
-                // in both the old and new Array of EventEmitter subscriptions!
-                // Thankfully, we don't have such a practical use case at the
-                // time of this writing.
-                emitterSubscription.remove();
-            }
+        if (wantsToBeInPiPMode !== newWantsToBeInPiPMode) {
+            dispatch(setWantsToBeInPiPMode(newWantsToBeInPiPMode));
         }
-        break;
     }
     }
 
-    return next(action);
+    return result;
 });
-
-/**
- * Notifies the feature pip that the action {@link APP_WILL_MOUNT} is being
- * dispatched within a specific redux {@code store}.
- *
- * @param {Store} store - The redux store in which the specified {@code action}
- * is being dispatched.
- * @param {Dispatch} next - The redux dispatch function to dispatch the
- * specified {@code action} to the specified {@code store}.
- * @param {Action} action - The redux action {@code APP_WILL_MOUNT} which is
- * being dispatched in the specified {@code store}.
- * @private
- * @returns {*} The value returned by {@code next(action)}.
- */
-function _appWillMount({ dispatch }, next, action) {
-    dispatch(_setEmitterSubscriptions([
-
-        // Android's onUserLeaveHint activity lifecycle callback
-        DeviceEventEmitter.addListener(
-            'onUserLeaveHint',
-            () => dispatch(enterPictureInPicture()))
-    ]));
-
-    return next(action);
-}

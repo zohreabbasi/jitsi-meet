@@ -6,8 +6,9 @@ import { Platform } from '../../base/react';
 
 import {
     ENTER_PICTURE_IN_PICTURE,
-    _SET_EMITTER_SUBSCRIPTIONS
+    WANTS_TO_BE_IN_PIP_MODE
 } from './actionTypes';
+import { isItOkToGoPiP } from './functions';
 
 /**
  * Enters (or rather initiates entering) picture-in-picture.
@@ -21,17 +22,7 @@ import {
  */
 export function enterPictureInPicture() {
     return (dispatch: Dispatch, getState: Function) => {
-        const state = getState();
-        const { app } = state['features/app'];
-
-        // FIXME We want to be able to enter Picture-in-Picture as soon as we
-        // are on the Conference page i.e. even before `joining` was set in the
-        // reducer.
-        const { conference, joining } = state['features/base/conference'];
-
-        if (app
-                && app.props.pictureInPictureEnabled
-                && (conference || joining)) {
+        if (isItOkToGoPiP(getState())) {
             const { PictureInPicture } = NativeModules;
             const p
                 = Platform.OS === 'android'
@@ -49,20 +40,19 @@ export function enterPictureInPicture() {
 }
 
 /**
- * Sets the {@code EventEmitter} subscriptions utilized by the feature
- * picture-in-picture.
+ * Indicates the app's intention to go into the Picture In Picture mode in case
+ * the app would be brought to the background (minimized).
  *
- * @param {Array<Object>} emitterSubscriptions - The {@code EventEmitter}
- * subscriptions to be set.
- * @protected
+ * @param {boolean} wantsToBeInPiPMode - {@code true} to go into the PiP mode on
+ * minimize or {@code false} otherwise.
  * @returns {{
- *     type: _SET_EMITTER_SUBSCRIPTIONS,
- *     emitterSubscriptions: Array<Object>
+ *     type: WANTS_TO_BE_IN_PIP_MODE,
+ *     wantsToBeInPiPMode: boolean
  * }}
  */
-export function _setEmitterSubscriptions(emitterSubscriptions: ?Array<Object>) {
+export function setWantsToBeInPiPMode(wantsToBeInPiPMode: boolean) {
     return {
-        type: _SET_EMITTER_SUBSCRIPTIONS,
-        emitterSubscriptions
+        type: WANTS_TO_BE_IN_PIP_MODE,
+        wantsToBeInPiPMode
     };
 }

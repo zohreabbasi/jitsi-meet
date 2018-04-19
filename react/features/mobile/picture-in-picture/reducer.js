@@ -1,16 +1,20 @@
 // @flow
 
-import { ReducerRegistry } from '../../base/redux';
+import { ReducerRegistry, set } from '../../base/redux';
 
-import { _SET_EMITTER_SUBSCRIPTIONS } from './actionTypes';
+import { WANTS_TO_BE_IN_PIP_MODE } from './actionTypes';
 
-ReducerRegistry.register('features/pip', (state = {}, action) => {
-    switch (action.type) {
-    case _SET_EMITTER_SUBSCRIPTIONS:
-        return {
-            ...state,
-            emitterSubscriptions: action.emitterSubscriptions
-        };
+const INITIAL_STATE = {
+    /**
+     * This flag indicates whether or not the app's intention is to go into the
+     * picture in picture mode in case the app would be minimized.
+     */
+    wantsToBeInPiPMode: false
+};
+
+ReducerRegistry.register('features/pip', (state = INITIAL_STATE, action) => {
+    if (action.type === WANTS_TO_BE_IN_PIP_MODE) {
+        return set(state, 'wantsToBeInPiPMode', action.wantsToBeInPiPMode);
     }
 
     return state;

@@ -11,14 +11,13 @@
 export const ENTER_PICTURE_IN_PICTURE = Symbol('ENTER_PICTURE_IN_PICTURE');
 
 /**
- * The type of redux action to set the {@code EventEmitter} subscriptions
- * utilized by the feature picture-in-picture.
+ * The type of redux action to indicates the app's intention to be switched into
+ * the picture-in-picture mode in case the app would be minimized.
  *
  * {
- *     type: _SET_EMITTER_SUBSCRIPTIONS,
- *     emitterSubscriptions: Array|undefined
+ *     type: WANTS_TO_BE_IN_PIP_MODE
  * }
  *
- * @protected
+ * @public
  */
-export const _SET_EMITTER_SUBSCRIPTIONS = Symbol('_SET_EMITTER_SUBSCRIPTIONS');
+export const WANTS_TO_BE_IN_PIP_MODE = Symbol('WANTS_TO_BE_IN_PIP_MODE');
