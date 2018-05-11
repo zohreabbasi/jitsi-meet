@@ -28,6 +28,8 @@
 
 @property (nonatomic, readonly, nonnull) JMInviteController *inviteController;
 
+@property (nonatomic) NSArray *knownDomains;
+
 @property (nonatomic) BOOL pictureInPictureEnabled;
 
 @property (nonatomic) BOOL welcomePageEnabled;

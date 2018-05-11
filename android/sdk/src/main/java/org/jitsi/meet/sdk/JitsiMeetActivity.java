@@ -63,6 +63,13 @@ public class JitsiMeetActivity extends AppCompatActivity {
     private URL defaultURL;
 
     /**
+     * A list of known domains (Jitsi instances) this application is capable of
+     * handling. Leave it to null to use the SDK default values, or empty array
+     * to use none.
+     */
+    private String[] knownDomains;
+
+    /**
      * Instance of the {@link JitsiMeetView} which this activity will display.
      */
     private JitsiMeetView view;
@@ -93,6 +100,14 @@ public class JitsiMeetActivity extends AppCompatActivity {
      */
     public URL getDefaultURL() {
         return view == null ? defaultURL : view.getDefaultURL();
+    }
+
+    /**
+     * Gets the known domain list.
+     * @return The array of the domains.
+     */
+    public String[] getKnownDomains() {
+        return knownDomains;
     }
 
     /**
@@ -147,6 +162,7 @@ public class JitsiMeetActivity extends AppCompatActivity {
             view.setPictureInPictureEnabled(
                 pictureInPictureEnabled.booleanValue());
         }
+        view.setKnownDomains(knownDomains);
         view.setWelcomePageEnabled(welcomePageEnabled);
 
         return view;
@@ -278,6 +294,15 @@ public class JitsiMeetActivity extends AppCompatActivity {
         } else {
             view.setDefaultURL(defaultURL);
         }
+    }
+
+    /**
+     * Sets the list of known domains handled by the app.
+     * @param knownDomains - Array of domains. Leave it null to use the SDK
+     *                     defaults, or empty array to use none.
+     */
+    public void setKnownDomains(String[] knownDomains) {
+        this.knownDomains = knownDomains;
     }
 
     /**

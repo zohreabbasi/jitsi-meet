@@ -271,6 +271,7 @@ static NSMapTable<NSString *, JitsiMeetView *> *views;
     }
 
     props[@"externalAPIScope"] = externalAPIScope;
+    props[@"knownDomains"] = self.knownDomains;
     props[@"pictureInPictureEnabled"] = @(self.pictureInPictureEnabled);
     props[@"welcomePageEnabled"] = @(self.welcomePageEnabled);
 

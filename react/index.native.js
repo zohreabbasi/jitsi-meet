@@ -34,6 +34,12 @@ class Root extends Component {
      */
     static propTypes = {
         /**
+         * A list of known domains used by the app in various features
+         * such as calendar-sync.
+         */
+        knownDomains: PropTypes.array,
+
+        /**
          * The URL, if any, with which the app was launched.
          */
         url: PropTypes.oneOfType([

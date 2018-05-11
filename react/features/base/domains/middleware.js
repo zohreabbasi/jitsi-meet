@@ -6,7 +6,7 @@ import { MiddlewareRegistry } from '../redux';
 import { parseURIString } from '../util';
 
 import { addKnownDomains } from './actions';
-import { JITSI_KNOWN_DOMAINS } from './constants';
+import { getDefaultDomains } from './functions';
 
 MiddlewareRegistry.register(store => next => action => {
     const result = next(action);
@@ -26,7 +26,8 @@ MiddlewareRegistry.register(store => next => action => {
 });
 
 /**
- * Ensures presence of the default server in the known domains list.
+ * Ensures presence of the default server and default domains in the known
+ * domains list.
  *
  * @param {Object} store - The redux store.
  * @private
@@ -34,11 +35,12 @@ MiddlewareRegistry.register(store => next => action => {
  */
 function _ensureDefaultServer({ dispatch, getState }) {
     const { app } = getState()['features/app'];
+    const defaultDomains = getDefaultDomains(getState());
     const defaultURL = parseURIString(app._getDefaultURL());
 
     dispatch(addKnownDomains([
         defaultURL.host,
-        ...JITSI_KNOWN_DOMAINS
+        ...defaultDomains
     ]));
 }
 

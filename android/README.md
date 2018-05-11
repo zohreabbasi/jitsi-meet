@@ -132,6 +132,10 @@ which displays a single `JitsiMeetView`.
 
 See JitsiMeetView.getDefaultURL.
 
+### getKnownDomains()
+
+See JitsiMeetView.getKnownDomains.
+
 #### getPictureInPictureEnabled()
 
 See JitsiMeetView.getPictureInPictureEnabled.
@@ -147,6 +151,10 @@ See JitsiMeetView.loadURL.
 #### setDefaultURL(URL)
 
 See JitsiMeetView.setDefaultURL.
+
+### setKnownDomains(String[])
+
+See JitsiMeetView.setKnownDomains.
 
 #### setPictureInPictureEnabled(boolean)
 
@@ -172,6 +180,10 @@ when the Activity holding this view is going to be destroyed, usually in the
 Returns the default base URL used to join a conference when a partial URL (e.g.
 a room name only) is specified to `loadURLString`/`loadURLObject`. If not set or
 if set to `null`, the default built in JavaScript is used: https://meet.jit.si.
+
+#### getKnownDomains()
+
+Returns the known domain list.
 
 #### getListener()
 
@@ -226,6 +238,13 @@ Sets the default URL. See `getDefaultURL` for more information.
 
 NOTE: Must be called before (if at all) `loadURL`/`loadURLString` for it to take
 effect.
+
+#### setKnownDomains
+
+Sets the list of known domains handled by the app.
+
+Note: Leave it to null to use the SDK default values, or empty array to use
+none.
 
 #### setListener(listener)
 

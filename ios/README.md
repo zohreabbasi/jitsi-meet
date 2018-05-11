@@ -56,6 +56,13 @@ built in JavaScript is used: https://meet.jit.si.
 NOTE: Must be set (if at all) before `loadURL:`/`loadURLString:` for it to take
 effect.
 
+#### knownDomains
+
+Property to set the list of known domains (video server instances) in the app.
+
+Note: Please leave it null or undefined if the SDK defaults are to be used, or
+empty array for no known domains.
+
 #### pictureInPictureEnabled
 
 Property to get / set whether Picture-in-Picture is enabled. Defaults to `YES`

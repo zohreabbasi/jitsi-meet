@@ -226,6 +226,13 @@ public class JitsiMeetView extends FrameLayout {
     private final InviteController inviteController;
 
     /**
+     * A list of known domains (Jitsi instances) this application is capable of
+     * handling. Leave it to null to use the SDK default values, or empty array
+     * to use none.
+     */
+    private String[] knownDomains;
+
+    /**
      * {@link JitsiMeetViewListener} instance for reporting events occurring in
      * Jitsi Meet.
      */
@@ -313,6 +320,14 @@ public class JitsiMeetView extends FrameLayout {
      */
     public InviteController getInviteController() {
         return inviteController;
+    }
+
+    /**
+     * Gets the known domain list.
+     * @return The array of the domains.
+     */
+    public String[] getKnownDomains() {
+        return knownDomains;
     }
 
     /**
@@ -409,6 +424,9 @@ public class JitsiMeetView extends FrameLayout {
                 "dialOutEnabled",
                 inviteController.isDialOutEnabled());
         }
+
+        // known domains
+        props.putStringArray("knownDomains", knownDomains);
 
         // pictureInPictureEnabled
         props.putBoolean(
@@ -541,6 +559,15 @@ public class JitsiMeetView extends FrameLayout {
      */
     public void setDefaultURL(URL defaultURL) {
         this.defaultURL = defaultURL;
+    }
+
+    /**
+     * Sets the list of known domains handled by the app.
+     * @param knownDomains - Array of domains. Leave it null to use the SDK
+     *                     defaults, or empty array to use none.
+     */
+    public void setKnownDomains(String[] knownDomains) {
+        this.knownDomains = knownDomains;
     }
 
     /**

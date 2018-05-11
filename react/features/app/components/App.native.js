@@ -43,6 +43,12 @@ export class App extends AbstractApp {
         dialOutEnabled: PropTypes.bool,
 
         /**
+         * A list of known domains used by the app in various features
+         * such as calendar-sync.
+         */
+        knownDomains: PropTypes.array,
+
+        /**
          * Whether Picture-in-Picture is enabled. If {@code true}, a toolbar
          * button is rendered in the {@link Conference} view to afford entering
          * Picture-in-Picture.
