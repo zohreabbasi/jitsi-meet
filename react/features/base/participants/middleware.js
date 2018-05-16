@@ -4,8 +4,9 @@ import UIEvents from '../../../../service/UI/UIEvents';
 
 import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../../app';
 import {
-    CONFERENCE_WILL_JOIN,
-    CONFERENCE_LEFT
+    CONFERENCE_FAILED,
+    CONFERENCE_LEFT,
+    CONFERENCE_WILL_JOIN
 } from '../conference';
 import { MiddlewareRegistry } from '../redux';
 import { playSound, registerSound, unregisterSound } from '../sounds';
@@ -54,6 +55,8 @@ MiddlewareRegistry.register(store => next => action => {
         _maybePlaySounds(store, action);
     }
 
+    _maybeResetLocalParticipantId(store, next, action);
+
     switch (action.type) {
     case APP_WILL_MOUNT:
         _registerSounds(store);
@@ -66,10 +69,6 @@ MiddlewareRegistry.register(store => next => action => {
 
     case CONFERENCE_WILL_JOIN:
         store.dispatch(localParticipantIdChanged(action.conference.myUserId()));
-        break;
-
-    case CONFERENCE_LEFT:
-        store.dispatch(localParticipantIdChanged(LOCAL_PARTICIPANT_DEFAULT_ID));
         break;
 
     case DOMINANT_SPEAKER_CHANGED: {
@@ -229,6 +228,34 @@ function _maybePlaySounds({ getState, dispatch }, action) {
             dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
         } else if (action.type === PARTICIPANT_LEFT) {
             dispatch(playSound(PARTICIPANT_LEFT_SOUND_ID));
+        }
+    }
+}
+
+/**
+ * The local participant ID must be cleared after we get outside of
+ * the conference. Because there's no guarantee when the CONFERENCE_LEFT
+ * event may come, it also must be done before joining the conference.
+ *
+ * @param {Store} store - The Redux store.
+ * @param {Dispatch} next - The redux dispatch function to dispatch the
+ * specified action to the specified store.
+ * @param {Action} action - The redux action which is being dispatched
+ * in the specified store.
+ * @returns {void}
+ * @private
+ */
+function _maybeResetLocalParticipantId({ getState, dispatch }, next, action) {
+    const state = getState();
+    const { conference, leaving } = state['features/base/conference'];
+    const abandonedConference = conference || leaving;
+
+    if ((action.type === CONFERENCE_FAILED || action.type === CONFERENCE_LEFT)
+                && (action.conference === abandonedConference)) {
+        const local = getLocalParticipant(state);
+
+        if (local && local.id !== LOCAL_PARTICIPANT_DEFAULT_ID) {
+            dispatch(localParticipantIdChanged(LOCAL_PARTICIPANT_DEFAULT_ID));
         }
     }
 }
